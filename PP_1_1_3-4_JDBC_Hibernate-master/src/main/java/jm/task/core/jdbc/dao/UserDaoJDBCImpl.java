@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    Connection connection = Util.getConnection();
+   private Connection connection = Util.getConnection();
 
     public UserDaoJDBCImpl() {
 
@@ -40,8 +40,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT INTO mydptest.users(name, lastname, age) VALUES(?,?,?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement
+                ("INSERT INTO mydptest.users(name, lastname, age) VALUES(?,?,?)")) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
@@ -53,9 +54,11 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (Statement statement = connection.createStatement()) {
-            String sql = "DELETE FROM mydptest.users WHERE id";
-            statement.executeUpdate(sql);
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement
+                ("DELETE FROM mydptest.users WHERE id")) {
+
+            preparedStatement.executeUpdate();
             System.out.println("User удален");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,10 +67,11 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> allUser = new ArrayList<>();
-        String sql = "SELECT id, name, lastName, age FROM mydptest.users";
+
 
         try (Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(sql);
+            ResultSet resultSet = statement.executeQuery
+                    ("SELECT id, name, lastName, age FROM mydptest.users");
 
             while (resultSet.next()) {
                 User user = new User();
@@ -86,9 +90,9 @@ public class UserDaoJDBCImpl implements UserDao {
 
 
     public void cleanUsersTable() {
-        String sql = "TRUNCATE mydptest.users";
+
         try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate(sql);
+            statement.executeUpdate(  "TRUNCATE mydptest.users");
             System.out.println("Таблица очищена");
         } catch (SQLException e) {
             e.printStackTrace();
